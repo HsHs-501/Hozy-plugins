@@ -2,17 +2,17 @@
 	"format": 1,
 	"id": "com.example.themes",
 	"name": "Example Themes",
-	"description": "Example themes for Revenge.",
+	"description": "Example themes for Valenced.",
 	"author": "Your Name",
 	"version": "1.0.0",
 	"dependencies": {
-		"revenge.api": {
-			"version": ">=1.2.1 <2"
+		"valenced.api": {
+			"version": ">=1 <2"
 		},
 		"discord": {
 			"version": "*"
 		},
-		"revenge.api.themes": {
+		"valenced.api.themes": {
 			"version": "*"
 		}
 	},

@@ -2,7 +2,7 @@
 	"format": 1,
 	"id": "com.example.plugin",
 	"name": "Example Plugin",
-	"description": "An example Revenge plugin built from the template.",
+	"description": "An example Valenced plugin built from the template.",
 	"author": "Your Name <643945264868098049> (https://discord.com \"Website\")",
 	"contributors": [
 		"Someone Else <669627189624307712> (mailto:support@discord.com)",
@@ -10,8 +10,8 @@
 	],
 	"version": "1.0.0",
 	"dependencies": {
-		"revenge.api": {
-			"version": ">=1.2.1 <2"
+		"valenced.api": {
+			"version": ">=1 <2"
 		},
 		"discord": {
 			"version": "*"

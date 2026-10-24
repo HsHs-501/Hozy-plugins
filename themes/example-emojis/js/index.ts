@@ -7,7 +7,7 @@
  * Images are named like Discord's: `emoji-<codepoints>.png`. Gradle packs `assets/` into the ZIP.
  */
 
-/// <reference types="@revenge-mod/themes-api" />
+/// <reference types="@valenced/themes-api" />
 
 export default plugin({
 	preInit({ themes }) {

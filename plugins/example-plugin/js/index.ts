@@ -2,7 +2,7 @@
  * Plugin JS entry point (`dist.script`).
  */
 
-import { callNativeMethod } from '@revenge-mod/modules/native'
+import { callNativeMethod } from '@valenced/modules/native'
 
 export default plugin({
 	// Runs as soon as possible with heavily limited APIs.
@@ -33,7 +33,7 @@ export default plugin({
 })
 
 // Declare the contract for native bridge methods
-declare module '@revenge-mod/modules/native' {
+declare module '@valenced/modules/native' {
 	export interface NativeMethods {
 		'com.example.plugin.ping': [args: any[], returnValue: null]
 		'com.example.plugin.alert': [

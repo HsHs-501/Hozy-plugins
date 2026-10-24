@@ -3,16 +3,16 @@
 package com.example.plugin
 
 import android.app.AlertDialog
-import io.github.revenge.bridge.asDelegate
-import io.github.revenge.plugins.plugin
-import io.github.revenge.xposed.api.registerNativeMethod
+import app.valenced.bridge.asDelegate
+import app.valenced.plugins.plugin
+import app.valenced.xposed.api.registerNativeMethod
 import java.io.File
 
 /**
  * Example native plugin entry point.
  *
  * The plugin is a top-level `val` built with the [plugin] DSL.
- * If there are multiple fields, the plugin loader resolves the first [io.github.revenge.plugins.PluginBuilder] value
+ * If there are multiple fields, the plugin loader resolves the first [app.valenced.plugins.PluginBuilder] value
  * exposed by the class specified by `dist.android.class` in `manifest.json`.
  *
  * `@file:JvmName("MyPlugin")` names the compiled file-facade class so `dist.android.class` can read
@@ -28,7 +28,7 @@ val myPlugin = plugin {
         val file = File(pluginDir, "assets/test.txt")
         log.i("Reading test.txt from plugin storage: ${file.readText()}")
 
-        // Expose a native method callable from the plugin's JS side via the Revenge bridge.
+        // Expose a native method callable from the plugin's JS side via the Valenced bridge.
         registerNativeMethod("${manifest.id}.ping") { args ->
             log.i("ping($args)")
             "pong"

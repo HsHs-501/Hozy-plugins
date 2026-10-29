@@ -1,0 +1,20 @@
+{
+	"format": 1,
+	"id": "dev.hozy.translator",
+	"name": "Hozy's Translator",
+	"description": "Translate any message with a single long-press tap. Result appears only to you as an ephemeral message.",
+	"author": "Hozy",
+	"icon": "TranslateIcon",
+	"version": "1.0.0",
+	"dependencies": {
+		"valenced.api": {
+			"version": ">=1 <2"
+		},
+		"discord": {
+			"version": "*"
+		}
+	},
+	"dist": {
+		"script": "index.js"
+	}
+}

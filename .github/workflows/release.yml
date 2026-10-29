@@ -50,7 +50,7 @@ jobs:
         if: steps.plan.outputs.count != '0'
         run: ./gradlew --no-daemon packageAllPlugins
         env:
-          GITHUB_TOKEN: ${{ secrets.READ_PACKAGES_TOKEN }} # For Gradle to download the API dependency.
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }} # For Gradle to download the API dependency.
 
       - name: Publish to the pool
         if: steps.plan.outputs.count != '0'

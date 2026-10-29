@@ -29,13 +29,12 @@ function sendEphemeralMessage(channelId: string, content: string) {
 			return
 		}
 
-		// Fallback: FluxDispatcher direct dispatch
 		const dispatcher =
 			lookupModule(withProps('dispatch', 'isDispatching')) ??
 			lookupModule(withProps('flushWaitQueue'))
+
 		if (dispatcher?.dispatch) {
-			// إصلاح: ديسكورد يشترط أن يكون الـ ID أرقام فقط (Snowflake)
-			// أي حروف ستؤدي لانهيار النظام الداخلي للرسالة وتجاهلها
+			// ID رقمي صالح ليقبله نظام ديسكورد الداخلي
 			const fakeSnowflake = "99999" + Date.now().toString();
 
 			dispatcher.dispatch({
@@ -47,7 +46,7 @@ function sendEphemeralMessage(channelId: string, content: string) {
 					content,
 					timestamp: new Date().toISOString(),
 					author: { id: '1', username: "Hozy's Translator", discriminator: '0000', bot: true },
-					flags: 64, // Ephemeral flag (رسالة مخفية)
+					flags: 64, // رسالة مخفية لك فقط
 					attachments: [],
 					embeds: [],
 					mentions: [],
@@ -58,14 +57,10 @@ function sendEphemeralMessage(channelId: string, content: string) {
 				optimistic: false,
 				isPushNotification: false
 			})
-			return
 		}
 	} catch (err) {
-		console.error("[Hozy's Translator] sendEphemeralMessage error:", err)
+		console.error("[Hozy's Translator] Error:", err)
 	}
-
-	// خيار الطوارئ المطلق: إذا فشلت كل طرق ديسكورد، اظهر الترجمة كإشعار منبثق
-	alert(content);
 }
 
 // ─── Core translate handler ───────────────────────────────────────────────────
@@ -77,7 +72,7 @@ async function handleTranslate(message: any, channelId: string, settings: Transl
 			: (message?.content ?? message?.message?.content ?? '')
 
 	if (!text.trim()) {
-		sendEphemeralMessage(channelId, '⚠️ **[Hozy\'s Translator]** No text found to translate.')
+		sendEphemeralMessage(channelId, '⚠️ **[Hozy\'s Translator]** لا يوجد نص لترجمته.')
 		return
 	}
 
@@ -89,19 +84,19 @@ async function handleTranslate(message: any, channelId: string, settings: Transl
 		const result = await translateText(text, service, from, to)
 
 		const engineLabel: Record<TranslationService, string> = {
-			google: 'Google Translate',
-			microsoft: 'Microsoft Translator',
-			brave: 'Brave Translate',
+			google: 'Google',
+			microsoft: 'Microsoft',
+			brave: 'Brave',
 		}
 
 		const fromLabel =
 			result.detectedSource && result.detectedSource !== from
-				? `${getLanguageName(result.detectedSource)} (detected)`
+				? `${getLanguageName(result.detectedSource)}`
 				: getLanguageName(from)
 
 		sendEphemeralMessage(
 			channelId,
-			`🌐 **[Hozy's Translator]** (${fromLabel} ➔ ${getLanguageName(to)}) [${engineLabel[result.serviceUsed]}]\n\n${result.translatedText}`,
+			`🌐 **[Hozy's Translator]** (${fromLabel} ➔ ${getLanguageName(to)})\n\n${result.translatedText}`,
 		)
 	} catch (err: any) {
 		sendEphemeralMessage(
@@ -124,7 +119,6 @@ export default definePlugin<{ jsonStorage: TranslatorSettings }>({
 
 		const getSettings = (): TranslatorSettings => jsonStorage.cache ?? DEFAULT_SETTINGS
 
-		// ── Strategy 1: Patch ActionSheetActionCreators.openLazy ──────────────
 		if (typeof ActionSheetActionCreators?.openLazy === 'function') {
 			cleanup(
 				before(ActionSheetActionCreators, 'openLazy', (args: any[]) => {
@@ -174,14 +168,11 @@ export default definePlugin<{ jsonStorage: TranslatorSettings }>({
 
 										return React.cloneElement(rendered, {}, [...childrenArray, translateRow])
 									}
-
 									return rendered
 								}
-
 								return mod?.default ? { ...mod, default: Patched } : Patched
 							})
 						}
-
 						return [wrappedLoader, key, props]
 					} catch {
 						return args
@@ -190,7 +181,6 @@ export default definePlugin<{ jsonStorage: TranslatorSettings }>({
 			)
 		}
 
-		// ── Strategy 2: Hook useMessageActions ────────────────────────────────
 		try {
 			for (const mod of lookupModules(withProps('useMessageActions'))) {
 				if (typeof mod?.useMessageActions !== 'function') continue
@@ -198,8 +188,6 @@ export default definePlugin<{ jsonStorage: TranslatorSettings }>({
 					after(mod, 'useMessageActions', (args: any[], ret: any) => {
 						try {
 							if (!Array.isArray(ret)) return ret
-							
-							// إصلاح: قراءة المتغيرات بشكل أفضل لواجهة ديسكورد الجديدة
 							const msg = args[0]?.message ?? args[0];
 							const ch = args[0]?.channel ?? args[1];
 							
@@ -222,11 +210,8 @@ export default definePlugin<{ jsonStorage: TranslatorSettings }>({
 					}),
 				)
 			}
-		} catch {
-			// silent
-		}
+		} catch { }
 
-		// ── Strategy 3: afterJSX on ActionSheet component ─────────────────────
 		if (Design?.ActionSheet) {
 			try {
 				cleanup(
@@ -253,9 +238,7 @@ export default definePlugin<{ jsonStorage: TranslatorSettings }>({
 							const children = element?.props?.children
 							const newChildren = Array.isArray(children)
 								? [...children, translateRow]
-								: children
-									? [children, translateRow]
-									: [translateRow]
+								: children ? [children, translateRow] : [translateRow]
 
 							return React.cloneElement(element, {}, newChildren)
 						} catch {
@@ -263,9 +246,7 @@ export default definePlugin<{ jsonStorage: TranslatorSettings }>({
 						}
 					}),
 				)
-			} catch {
-				// silent
-			}
+			} catch { }
 		}
 	},
 
